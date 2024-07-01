@@ -38,3 +38,7 @@ Use the POST /users/{user_id}/playlists endpoint to create playlists.
 Use the POST /playlists/{playlist_id}/tracks endpoint to add tracks to the playlists.
 Combining these steps would allow you to automate the categorization and organization of your Liked Songs into playlists.
 ```
+
+## Usage
+
+Clone the `.env.sample` file into a `.env` file in order for the scripts to pull from your API keys
