@@ -25,7 +25,20 @@ jobs:
         source venv/bin/activate
         pip install -r requirements.txt
 
+    - name: Check for test files
+      id: check_test_files
+      run: |
+        if ls -1 tests/test_*.py > /dev/null 2>&1; then
+          echo "TESTS_FOUND=true" >> $GITHUB_ENV
+        else
+          echo "TESTS_FOUND=false" >> $GITHUB_ENV
+        fi
+
+    - name: Print TESTS_FOUND value
+      run: echo "TESTS_FOUND is ${{ env.TESTS_FOUND }}"
+
     - name: Run tests
+      if: ${{ env.TESTS_FOUND == 'true' }}
       run: |
         source venv/bin/activate
         pytest
