@@ -163,3 +163,4 @@ cython_debug/
 
 .env.test
 .spotify_cache_test
+.spotify_cache

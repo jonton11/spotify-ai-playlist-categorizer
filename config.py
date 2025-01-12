@@ -1,13 +1,22 @@
 from dotenv import load_dotenv
 import os
+import sys
 
 def is_running_in_ci():
     """Check if we're running in a CI environment."""
     return os.getenv('CI') == 'true'
 
-# Only load from .env file if not in CI (CI uses GitHub secrets)
-if not is_running_in_ci():
-    load_dotenv()
+def is_running_tests():
+    """Check if we're running tests."""
+    return 'pytest' in sys.modules
+
+# Load appropriate .env file
+if is_running_tests():
+    # Use .env.test for tests
+    load_dotenv('.env.test')
+elif not is_running_in_ci():
+    # Use .env for development
+    load_dotenv('.env')
 
 # Required in all environments
 required_vars = ['SPOTIFY_CLIENT_ID', 'SPOTIFY_CLIENT_SECRET']
