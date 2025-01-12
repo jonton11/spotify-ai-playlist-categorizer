@@ -24,26 +24,7 @@ def mock_track():
     }
 
 @pytest.fixture
-def mock_audio_features():
-    """Mock audio features as returned by Spotify API."""
-    return {
-        "danceability": 0.8,
-        "energy": 0.9,
-        "key": 5,
-        "loudness": -4.329,
-        "mode": 1,
-        "speechiness": 0.0461,
-        "acousticness": 0.0346,
-        "instrumentalness": 0.0,
-        "liveness": 0.0897,
-        "valence": 0.813,
-        "tempo": 118.211,
-        "id": "track123",
-        "duration_ms": 180000
-    }
-
-@pytest.fixture
-def mock_spotify_client(mock_track, mock_audio_features):
+def mock_spotify_client(mock_track):
     """Mock Spotify client with predefined responses."""
     client = Mock()
     
@@ -54,9 +35,6 @@ def mock_spotify_client(mock_track, mock_audio_features):
         "limit": 100,
         "offset": 0
     }
-    
-    # Mock audio_features
-    client.audio_features.return_value = [mock_audio_features] * 3
     
     # Mock current_user_saved_tracks_delete
     client.current_user_saved_tracks_delete.return_value = None
