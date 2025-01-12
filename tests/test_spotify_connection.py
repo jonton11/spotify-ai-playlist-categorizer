@@ -9,8 +9,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 def is_running_in_ci():
-    """Check if we're running in a CI environment."""
-    return os.getenv('CI') == 'true'
+    """Check if we're running in a CI environment or OAuth tests should be skipped."""
+    return os.getenv('CI') == 'true' or os.getenv('NO_OAUTH') == 'true'
 
 def load_env(env_file='.env.test'):
     """
