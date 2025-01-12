@@ -2,11 +2,15 @@ import os
 from dotenv import load_dotenv
 import pytest
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth, CacheFileHandler
+from spotipy.oauth2 import SpotifyOAuth, CacheFileHandler, SpotifyClientCredentials
 import logging
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
+
+def is_running_in_ci():
+    """Check if we're running in a CI environment."""
+    return os.getenv('CI') == 'true'
 
 def load_env(env_file='.env.test'):
     """
@@ -25,8 +29,13 @@ def load_env(env_file='.env.test'):
     else:
         print(f"\nWarning: {env_file} not found, checking environment variables...")
     
-    # Verify required variables are set
-    required_vars = ['SPOTIFY_CLIENT_ID', 'SPOTIFY_CLIENT_SECRET', 'SPOTIFY_REDIRECT_URI']
+    # Always required variables
+    required_vars = ['SPOTIFY_CLIENT_ID', 'SPOTIFY_CLIENT_SECRET']
+
+    # Redirect URI only required for non-CI environments
+    if not is_running_in_ci():
+        required_vars.append('SPOTIFY_REDIRECT_URI')
+
     missing_vars = [var for var in required_vars if not os.getenv(var)]
     
     if missing_vars:
@@ -39,14 +48,15 @@ def load_env(env_file='.env.test'):
 # Load test environment for these tests
 load_env('.env.test')
 
-def test_spotify_credentials():
-    """Test that we can initialize Spotify client with our credentials."""
+@pytest.mark.skipif(is_running_in_ci(), reason="OAuth flow requires user interaction")
+def test_spotify_oauth_flow():
+    """Test the OAuth flow for local development."""
     client_id = os.getenv('SPOTIFY_CLIENT_ID')
     client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
     redirect_uri = os.getenv('SPOTIFY_REDIRECT_URI')
     
     # Print credentials for verification (excluding secret)
-    print(f"\nTesting with:")
+    print(f"\nTesting OAuth flow with:")
     print(f"Client ID: {client_id}")
     print(f"Redirect URI: {redirect_uri}")
     
@@ -101,14 +111,42 @@ def test_spotify_credentials():
         if os.path.exists(cache_path):
             os.remove(cache_path)
 
+def test_spotify_client_credentials():
+    """Test the Client Credentials flow (used in CI/CD)."""
+    client_id = os.getenv('SPOTIFY_CLIENT_ID')
+    client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
+    
+    try:
+        # Use client credentials flow (no user auth required)
+        auth_manager = SpotifyClientCredentials(
+            client_id=client_id,
+            client_secret=client_secret
+        )
+        
+        sp = spotipy.Spotify(auth_manager=auth_manager)
+        
+        # Test API connection with a simple search
+        # This doesn't require user authentication
+        results = sp.search(q='test', limit=1)
+        assert results is not None
+        assert 'tracks' in results
+        print("\nSuccessfully connected to Spotify API using client credentials")
+        
+    except Exception as e:
+        pytest.fail(f"Failed to connect to Spotify API: {str(e)}\nType: {type(e)}")
+
 def test_environment_variables():
     """Test that all required environment variables are set."""
+    # Always required variables
     required_vars = [
         'SPOTIFY_CLIENT_ID',
-        'SPOTIFY_CLIENT_SECRET',
-        'SPOTIFY_REDIRECT_URI'
+        'SPOTIFY_CLIENT_SECRET'
     ]
     
+    # Redirect URI only required for non-CI environments
+    if not is_running_in_ci():
+        required_vars.append('SPOTIFY_REDIRECT_URI')
+
     for var in required_vars:
         assert os.getenv(var) is not None, f"Missing environment variable: {var}"
         assert os.getenv(var) != "", f"Empty environment variable: {var}" 

@@ -51,7 +51,7 @@ This project requires Spotify API credentials to function. Follow these steps to
    ```bash
    # For development
    cp .env.sample .env
-   
+
    # For testing
    cp .env.sample .env.test
    ```
@@ -61,11 +61,22 @@ This project requires Spotify API credentials to function. Follow these steps to
    - For development (`.env`): Use your production application credentials
    - For testing (`.env.test`): Use separate test application credentials
 
-3. Make sure both files have the following variables set:
+3. Set the required environment variables:
+
+   **For Local Development & Testing** (in `.env` and `.env.test`):
    ```
    SPOTIFY_CLIENT_ID=your_client_id
    SPOTIFY_CLIENT_SECRET=your_client_secret
    SPOTIFY_REDIRECT_URI=http://localhost:8888/callback
    ```
+
+   **For GitHub Actions**:
+   ```
+   SPOTIFY_CLIENT_ID=your_client_id
+   SPOTIFY_CLIENT_SECRET=your_client_secret
+   SPOTIFY_REDIRECT_URI=http://localhost:8888/callback
+   ```
+   Note: While the `SPOTIFY_REDIRECT_URI` isn't used in CI tests (which use a different authentication method), 
+   you can still include it in your GitHub Secrets to maintain consistency with the local environment.
 
 Note: Both `.env` and `.env.test` files are git-ignored for security. Never commit these files or share your credentials.
