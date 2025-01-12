@@ -1,5 +1,7 @@
 # Spotify AI Playlist Categorizer
 
+[![codecov](https://codecov.io/gh/jonton11/spotify-ai-playlist-categorizer/branch/main/graph/badge.svg)](https://codecov.io/gh/jonton11/spotify-ai-playlist-categorizer)
+
 Playing around with Spotify API and AI to create categories and playlists based on my Liked songs
 
 
