@@ -42,3 +42,30 @@ Combining these steps would allow you to automate the categorization and organiz
 ## Usage
 
 Clone the `.env.sample` file into a `.env` file in order for the scripts to pull from your API keys
+
+## Environment Setup
+
+This project requires Spotify API credentials to function. Follow these steps to set up your environment:
+
+1. Clone the `.env.sample` file for both development and testing:
+   ```bash
+   # For development
+   cp .env.sample .env
+   
+   # For testing
+   cp .env.sample .env.test
+   ```
+
+2. Update both files with your Spotify API credentials:
+   - Get your credentials from the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+   - For development (`.env`): Use your production application credentials
+   - For testing (`.env.test`): Use separate test application credentials
+
+3. Make sure both files have the following variables set:
+   ```
+   SPOTIFY_CLIENT_ID=your_client_id
+   SPOTIFY_CLIENT_SECRET=your_client_secret
+   SPOTIFY_REDIRECT_URI=http://localhost:8888/callback
+   ```
+
+Note: Both `.env` and `.env.test` files are git-ignored for security. Never commit these files or share your credentials.
